@@ -1,7 +1,9 @@
 package hetzner
 
 import (
-	"os"
+	"bytes"
+	"errors"
+	"fmt"
 	"text/template"
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
@@ -35,7 +37,7 @@ type UserDataConfig struct {
 	EnvConfig map[string]string
 }
 
-func generateConfig(cfg *config.Config) {
+func generateConfig(cfg *config.Config) (string, error) {
 	envConfig := map[string]string{}
 	envConfig["WOODPECKER_SERVER"] = cfg.WoodpeckerInstance
 	envConfig["WOODPECKER_AGENT_SECRET"] = cfg.WoodpeckerAgentSecret
@@ -44,12 +46,15 @@ func generateConfig(cfg *config.Config) {
 		Image:     "woodpeckerci/woodpecker-agent:latest",
 		EnvConfig: envConfig,
 	}
-	tmpl, err := template.New("test").Parse(USER_DATA_TEMPLATE)
+	tmpl, err := template.New("userdata").Parse(USER_DATA_TEMPLATE)
 	if err != nil {
-		panic(err)
+		return "", errors.New(fmt.Sprintf("Errors in userdata template: %s", err.Error()))
 	}
-	err = tmpl.Execute(os.Stdout, config)
+	var buf bytes.Buffer
+	err = tmpl.Execute(&buf, &config)
 	if err != nil {
-		panic(err)
+		return "", errors.New(fmt.Sprintf("Could not render userdata template: %s", err.Error()))
 	}
+
+	return buf.String(), nil
 }
