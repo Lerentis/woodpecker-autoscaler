@@ -41,6 +41,7 @@ func CheckPending(cfg *config.Config) error {
 		return errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
 	}
 	if queueInfo.Stats.PendingCount > 0 {
+		// TODO: queueInfo.Pending may be empty
 		for _, pendingJobs := range queueInfo.Pending {
 			// TODO: separate key and value from LabelSelector and compare them deeply
 			_, exists := pendingJobs.Labels[cfg.LabelSelector]

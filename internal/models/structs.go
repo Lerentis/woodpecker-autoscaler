@@ -33,7 +33,7 @@ type PendingInformation struct {
 	ID           int               `json:"id"`
 	Data         string            `json:"data"`
 	Labels       map[string]string `json:"labels"`
-	Dependencies string            `json:"dependencies"`
+	Dependencies string            `json:"dependencies,omitempty"`
 	RunOn        string            `json:"run_on"`
 	DepStatus    string            `json:"-"` // dont need those
 	AgentId      int               `json:"agent_id"`
@@ -48,9 +48,9 @@ type Stats struct {
 }
 
 type QueueInfo struct {
-	Pending       []PendingInformation `json:"pending"`
+	Pending       []PendingInformation `json:"pending,omitempty"`
 	WaitingOnDeps string               `json:"-"` // dont need those
-	Running       int                  `json:"running"`
+	Running       int                  `json:"running,omitempty"`
 	Stats         Stats                `json:"stats"`
 	Paused        bool                 `json:"paused"`
 }
