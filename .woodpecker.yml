@@ -4,10 +4,11 @@ steps:
     commands:
       - go test ./...
     when:
-      event:
-        - push
-        - pull_request
-  build:
+      - event: pull_request
+      - event: push
+        branch: main
+      - event: tag
+  pr-build:
     image: woodpeckerci/plugin-docker-buildx
     settings:
       platforms: linux/arm64/v8
@@ -17,9 +18,36 @@ steps:
         - ${CI_COMMIT_SHA}
       dry-run: true
     when:
-      event:
-        - push
-        - pull_request
+      - event: pull_request
+  pre-release:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/arm64/v8
+      repo: lerentis/metallb-ip-floater
+      tags:
+        - latest
+        - ${CI_COMMIT_SHA}
+      password:
+        from_secret: docker_hub_password
+      username:
+        from_secret: docker_hub_username
+    when:
+      - event: push
+        branch: main
+  release:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/arm64/v8
+      repo: lerentis/metallb-ip-floater
+      tags:
+        - latest
+        - ${CI_COMMIT_TAG}
+      password:
+        from_secret: docker_hub_password
+      username:
+        from_secret: docker_hub_username
+    when:
+      - event: tag
   notify:
     image: appleboy/drone-telegram
     settings:
@@ -29,9 +57,9 @@ steps:
       token:
         from_secret: telegram_secret
     when:
-      status:
-      - failure
-      - success
-      event:
-      - push
-      - pull_request
+      - event: pull_request
+      - event: push
+        branch: main
+      - event: tag
+      - status: success
+      - status: failure
