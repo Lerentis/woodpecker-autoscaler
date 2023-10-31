@@ -54,3 +54,39 @@ type QueueInfo struct {
 	Stats         Stats                `json:"stats"`
 	Paused        bool                 `json:"paused"`
 }
+
+/*[
+  {
+    "id": 2,
+    "created": 1693567407,
+    "updated": 1694013270,
+    "name": "",
+    "owner_id": -1,
+    "token": "redacted",
+    "last_contact": 1694013270,
+    "platform": "linux/arm64",
+    "backend": "kubernetes",
+    "capacity": 4,
+    "version": "next-971534929c",
+    "no_schedule": false
+  }
+]*/
+
+type Agent struct {
+	ID          int64  `json:"id"`
+	Created     int64  `json:"created"`
+	Updated     int64  `json:"updated"`
+	Name        string `json:"name"`
+	OwnerID     int64  `json:"owner_id"`
+	Token       string `json:"token"`
+	LastContact int64  `json:"last_contact"`
+	Platform    string `json:"platform"`
+	Backend     string `json:"backend"`
+	Capacity    int32  `json:"capacity"`
+	Version     string `json:"version"`
+	NoSchedule  bool   `json:"no_schedule"`
+}
+
+type AgentList struct {
+	Agents []Agent
+}

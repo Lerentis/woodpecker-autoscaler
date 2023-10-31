@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/models"
@@ -34,27 +35,43 @@ func QueueInfo(cfg *config.Config, target interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(target)
 }
 
-func CheckPending(cfg *config.Config) error {
+func CheckPending(cfg *config.Config) (bool, error) {
+	expectedKV := strings.Split(cfg.LabelSelector, "=")
 	queueInfo := new(models.QueueInfo)
 	err := QueueInfo(cfg, queueInfo)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
+		return false, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
 	}
 	if queueInfo.Stats.PendingCount > 0 {
-		// TODO: queueInfo.Pending may be empty
-		for _, pendingJobs := range queueInfo.Pending {
-			// TODO: separate key and value from LabelSelector and compare them deeply
-			_, exists := pendingJobs.Labels[cfg.LabelSelector]
-			if exists {
-				log.WithFields(log.Fields{
-					"Caller": "CheckPending",
-				}).Info("Found pending job for us. Requesting new Agent")
-			} else {
-				log.WithFields(log.Fields{
-					"Caller": "CheckPending",
-				}).Info("No Jobs for us in Queue")
+		if queueInfo.Pending != nil {
+			for _, pendingJobs := range queueInfo.Pending {
+				val, exists := pendingJobs.Labels[expectedKV[0]]
+				if exists && val == expectedKV[1] {
+					log.WithFields(log.Fields{
+						"Caller": "CheckPending",
+					}).Info("Found pending job for us")
+					return true, nil
+				} else {
+					log.WithFields(log.Fields{
+						"Caller": "CheckPending",
+					}).Info("No Jobs for us in Queue")
+					return false, nil
+				}
 			}
 		}
 	}
-	return nil
+	return false, nil
+}
+
+func CheckRunning(cfg *config.Config) (bool, error) {
+	queueInfo := new(models.QueueInfo)
+	err := QueueInfo(cfg, queueInfo)
+	if err != nil {
+		return false, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
+	}
+	// TODO: create and parse running object. there may be jobs that are not for us
+	if queueInfo.Stats.RunningCount > 0 {
+		return true, nil
+	}
+	return false, nil
 }

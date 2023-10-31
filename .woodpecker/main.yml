@@ -1,0 +1,29 @@
+when:
+  - event: push
+    branch: main
+
+steps:
+  test:
+    image: golang:1.21
+    commands:
+      - go test ./...
+  pre-release:
+    image: woodpeckerci/plugin-docker-buildx
+    settings:
+      platforms: linux/arm64/v8
+      repo: lerentis/metallb-ip-floater
+      tags:
+        - latest
+        - ${CI_COMMIT_SHA}
+      password:
+        from_secret: docker_hub_password
+      username:
+        from_secret: docker_hub_username
+  notify:
+    image: appleboy/drone-telegram
+    settings:
+      message: "Commit {{ commit.message }} ({{ commit.link }}) ran with build {{ build.number }} and finished with status {{ build.status }}."
+      to: 
+        from_secret: telegram_userid
+      token:
+        from_secret: telegram_secret

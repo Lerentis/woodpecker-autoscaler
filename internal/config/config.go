@@ -18,7 +18,8 @@ type Config = struct {
 	Protocol              string `default:"http" env:"WOODPECKER_AUTOSCALER_PROTOCOL"`
 	HcloudToken           string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
 	InstanceType          string `default:"" env:"WOODPECKER_AUTOSCALER_INSTANCE_TYPE"`
-	Zone                  string `default:"" env:"WOODPECKER_AUTOSCALER_ZONE"`
+	Region                string `default:"" env:"WOODPECKER_AUTOSCALER_REGION"`
+	Datacenter            string `default:"" env:"WOODPECKER_AUTOSCALER_DATACENTER"`
 	DryRun                bool   `default:"false" env:"WOODPECKER_AUTOSCALER_DRY_RUN"`
 	SSHKey                string `default:"" env:"WOODPECKER_AUTOSCALER_SSH_KEY"`
 }
