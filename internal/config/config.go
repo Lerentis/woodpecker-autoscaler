@@ -9,19 +9,19 @@ import (
 )
 
 type Config = struct {
-	LogLevel              string `default:"Info" env:"WOODPECKER_AUTOSCALER_LOGLEVEL"`
-	CheckInterval         int    `default:"15" env:"WOODPECKER_AUTOSCALER_CHECK_INTERVAL"`
-	LabelSelector         string `default:"uploadfilter24.eu/instance-role=Woodpecker" env:"WOODPECKER_AUTOSCALER_LABELSELECTOR"`
-	WoodpeckerInstance    string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_INSTANCE"`
-	WoodpeckerAgentSecret string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_SECRET"`
-	WoodpeckerApiToken    string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_API_TOKEN"`
-	Protocol              string `default:"http" env:"WOODPECKER_AUTOSCALER_PROTOCOL"`
-	HcloudToken           string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
-	InstanceType          string `default:"" env:"WOODPECKER_AUTOSCALER_INSTANCE_TYPE"`
-	Region                string `default:"" env:"WOODPECKER_AUTOSCALER_REGION"`
-	Datacenter            string `default:"" env:"WOODPECKER_AUTOSCALER_DATACENTER"`
-	DryRun                bool   `default:"false" env:"WOODPECKER_AUTOSCALER_DRY_RUN"`
-	SSHKey                string `default:"" env:"WOODPECKER_AUTOSCALER_SSH_KEY"`
+	LogLevel                string `default:"Info" env:"WOODPECKER_AUTOSCALER_LOGLEVEL"`
+	CheckInterval           int    `default:"15" env:"WOODPECKER_AUTOSCALER_CHECK_INTERVAL"`
+	DryRun                  bool   `default:"false" env:"WOODPECKER_AUTOSCALER_DRY_RUN"`
+	WoodpeckerLabelSelector string `default:"uploadfilter24.eu/instance-role=Woodpecker" env:"WOODPECKER_AUTOSCALER_WOODPECKER_LABEL_SELECTOR"`
+	WoodpeckerInstance      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_INSTANCE"`
+	WoodpeckerAgentSecret   string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_SECRET"`
+	WoodpeckerApiToken      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_API_TOKEN"`
+	WoodpeckerProtocol      string `default:"http" env:"WOODPECKER_AUTOSCALER_WOODPECKER_PROTOCOL"`
+	HcloudToken             string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
+	HcloudInstanceType      string `default:"cpx21" env:"WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE"`
+	HcloudRegion            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_REGION"`
+	HcloudDatacenter        string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_DATACENTER"`
+	HcloudSSHKey            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEY"`
 }
 
 func GenConfig() (cfg *Config, err error) {

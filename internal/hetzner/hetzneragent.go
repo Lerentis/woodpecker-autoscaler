@@ -46,7 +46,7 @@ func generateConfig(cfg *config.Config, name string) (string, error) {
 	envConfig := map[string]string{}
 	envConfig["WOODPECKER_SERVER"] = cfg.WoodpeckerInstance
 	envConfig["WOODPECKER_AGENT_SECRET"] = cfg.WoodpeckerAgentSecret
-	envConfig["WOODPECKER_FILTER_LABELS"] = cfg.LabelSelector
+	envConfig["WOODPECKER_FILTER_LABELS"] = cfg.WoodpeckerLabelSelector
 	envConfig["WOODPECKER_HOSTNAME"] = name
 	config := UserDataConfig{
 		Image:     "woodpeckerci/woodpecker-agent:latest",
@@ -68,11 +68,11 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
 	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
 	userdata, err := generateConfig(cfg, name)
-	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker", "amd64")
-	loc, _, err := client.Location.GetByName(context.Background(), cfg.Region)
-	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.InstanceType)
-	key, _, err := client.SSHKey.GetByName(context.Background(), cfg.SSHKey)
-	dc, _, err := client.Datacenter.GetByName(context.Background(), cfg.Datacenter)
+	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "amd64")
+	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudRegion)
+	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.HcloudInstanceType)
+	key, _, err := client.SSHKey.GetByName(context.Background(), cfg.HcloudSSHKey)
+	dc, _, err := client.Datacenter.GetByName(context.Background(), cfg.HcloudDatacenter)
 	labels := map[string]string{}
 	labels["Role"] = "WoodpeckerAgent"
 	labels["ControledBy"] = "WoodpeckerAutoscaler"
@@ -111,13 +111,19 @@ func ListAgents(cfg *config.Config) ([]hcloud.Server, error) {
 		val, exists := server.Labels["ControledBy"]
 		if exists && val == "WoodpeckerAutoscaler" {
 			myServers = append(myServers, *server)
+			log.WithFields(log.Fields{
+				"Caller": "ListAgents",
+			}).Debugf("Owning %s Hetzner node", server.Name)
 		}
 	}
 	return myServers, nil
 }
 
-func DecomAgent(cfg *config.Config, server *hcloud.Server) error {
+func DecomNode(cfg *config.Config, server *hcloud.Server) error {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
+	log.WithFields(log.Fields{
+		"Caller": "DecomNode",
+	}).Debugf("Deleting %s node", server.Name)
 	_, _, err := client.Server.DeleteWithResult(context.Background(), server)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Could not delete Agent: %s", err.Error()))

@@ -42,6 +42,15 @@ func main() {
 				"Caller": "Main",
 			}).Fatal(fmt.Sprintf("Error checking woodpecker queue: %s", err.Error()))
 		}
+		ownedNodes, err := hetzner.ListAgents(cfg)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"Caller": "Main",
+			}).Fatal(fmt.Sprintf("Error collecting owned hetzner nodes: %s", err.Error()))
+		}
+		log.WithFields(log.Fields{
+			"Caller": "Main",
+		}).Infof("Currently owning %d Agents", len(ownedNodes))
 		if pendingTasks {
 			server, err := hetzner.CreateNewAgent(cfg)
 			if err != nil {
@@ -78,8 +87,17 @@ func main() {
 				log.WithFields(log.Fields{
 					"Caller": "Main",
 				}).Info("No tasks running. Will remove agents")
-				// TODO: iterate over agents and remove ours
-				// agent name should match hetzner name
+				for _, server := range ownedNodes {
+					hetzner.DecomNode(cfg, &server)
+					agentId, err := woodpecker.GetAgentIdByName(cfg, server.Name)
+					if err != nil {
+						log.WithFields(log.Fields{
+							"Caller": "Main",
+						}).Warnf("Could not find agent %s in woodpecker. Assuming it was never added", server.Name)
+					} else {
+						woodpecker.DecomAgent(cfg, agentId)
+					}
+				}
 			}
 		}
 		time.Sleep(time.Duration(cfg.CheckInterval) * time.Minute)

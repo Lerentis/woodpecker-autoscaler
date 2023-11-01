@@ -36,7 +36,7 @@ func QueueInfo(cfg *config.Config, target interface{}) error {
 }
 
 func CheckPending(cfg *config.Config) (bool, error) {
-	expectedKV := strings.Split(cfg.LabelSelector, "=")
+	expectedKV := strings.Split(cfg.WoodpeckerLabelSelector, "=")
 	queueInfo := new(models.QueueInfo)
 	err := QueueInfo(cfg, queueInfo)
 	if err != nil {

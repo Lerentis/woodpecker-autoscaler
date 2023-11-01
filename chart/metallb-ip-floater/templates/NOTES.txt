@@ -1,0 +1,3 @@
+Service has been deployed
+export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "woodpecker-autoscaler.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+get logs: kubectl logs -f --namespace {{ .Release.Namespace }} $POD_NAME

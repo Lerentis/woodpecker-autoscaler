@@ -10,7 +10,7 @@ steps:
     image: woodpeckerci/plugin-docker-buildx
     settings:
       platforms: linux/arm64/v8
-      repo: lerentis/metallb-ip-floater
+      repo: lerentis/woodpecker-autoscaler
       tags:
         - latest
         - ${CI_COMMIT_SHA}

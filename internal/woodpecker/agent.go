@@ -8,6 +8,8 @@ import (
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/models"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func DecomAgent(cfg *config.Config, agentId int) error {
@@ -18,6 +20,10 @@ func DecomAgent(cfg *config.Config, agentId int) error {
 	}
 	req.Header.Set("Accept", "text/plain")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.WoodpeckerApiToken))
+
+	log.WithFields(log.Fields{
+		"Caller": "DecomAgent",
+	}).Debugf("Deleting %d agent from woodpecker", agentId)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -53,6 +59,9 @@ func GetAgentIdByName(cfg *config.Config, name string) (int, error) {
 
 	for _, agent := range agentList.Agents {
 		if agent.Name == name {
+			log.WithFields(log.Fields{
+				"Caller": "GetAgentIdByName",
+			}).Debugf("Found ID %d for Agent %s", agent.ID, name)
 			return int(agent.ID), nil
 		}
 	}
