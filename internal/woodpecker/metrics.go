@@ -64,14 +64,27 @@ func CheckPending(cfg *config.Config) (bool, error) {
 }
 
 func CheckRunning(cfg *config.Config) (bool, error) {
+	expectedKV := strings.Split(cfg.WoodpeckerLabelSelector, "=")
 	queueInfo := new(models.QueueInfo)
 	err := QueueInfo(cfg, queueInfo)
 	if err != nil {
 		return false, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
 	}
-	// TODO: create and parse running object. there may be jobs that are not for us
 	if queueInfo.Stats.RunningCount > 0 {
-		return true, nil
+		for _, runningJobs := range queueInfo.Running {
+			val, exists := runningJobs.Labels[expectedKV[0]]
+			if exists && val == expectedKV[1] {
+				log.WithFields(log.Fields{
+					"Caller": "CheckRunning",
+				}).Info("Found running job for us")
+				return true, nil
+			} else {
+				log.WithFields(log.Fields{
+					"Caller": "CheckRunning",
+				}).Info("No running job for us")
+				return false, nil
+			}
+		}
 	}
 	return false, nil
 }

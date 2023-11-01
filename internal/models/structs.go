@@ -29,7 +29,7 @@ package models
 	}
 */
 
-type PendingInformation struct {
+type JobInformation struct {
 	ID           int               `json:"id"`
 	Data         string            `json:"data"`
 	Labels       map[string]string `json:"labels"`
@@ -48,11 +48,11 @@ type Stats struct {
 }
 
 type QueueInfo struct {
-	Pending       []PendingInformation `json:"pending,omitempty"`
-	WaitingOnDeps string               `json:"-"` // dont need those
-	Running       int                  `json:"running,omitempty"`
-	Stats         Stats                `json:"stats"`
-	Paused        bool                 `json:"paused"`
+	Pending       []JobInformation `json:"pending,omitempty"`
+	WaitingOnDeps string           `json:"-"` // dont need those
+	Running       []JobInformation `json:"running,omitempty"`
+	Stats         Stats            `json:"stats"`
+	Paused        bool             `json:"paused"`
 }
 
 /*[
