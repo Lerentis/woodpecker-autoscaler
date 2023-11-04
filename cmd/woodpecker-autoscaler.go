@@ -59,6 +59,12 @@ func main() {
 				}).Fatal(fmt.Sprintf("Error spawning new agent: %s", err.Error()))
 			}
 			for {
+				server, err = hetzner.RefreshNodeInfo(cfg, server.ID)
+				if err != nil {
+					log.WithFields(log.Fields{
+						"Caller": "Main",
+					}).Fatal(fmt.Sprintf("Failed to start Agent: %s", err.Error()))
+				}
 				if server.Status == hcloud.ServerStatusRunning {
 					log.WithFields(log.Fields{
 						"Caller": "Main",

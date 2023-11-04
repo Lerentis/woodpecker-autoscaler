@@ -134,3 +134,12 @@ func DecomNode(cfg *config.Config, server *hcloud.Server) error {
 	}
 	return nil
 }
+
+func RefreshNodeInfo(cfg *config.Config, serverID int) (*hcloud.Server, error) {
+	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
+	server, _, err := client.Server.GetByID(context.Background(), serverID)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not refresh server info: %s", err.Error()))
+	}
+	return server, nil
+}
