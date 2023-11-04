@@ -30,7 +30,7 @@ write_files:
           - /var/run/docker.sock:/var/run/docker.sock
         environment:
 		{{- range $key, $val := .EnvConfig }}
-			- {{ $key }}: {{ $val }}
+          - {{ $key }}="{{ $val }}"
 	  	{{- end }}
   path: /root/docker-compose.yml
 runcmd:
@@ -44,7 +44,8 @@ type UserDataConfig struct {
 
 func generateConfig(cfg *config.Config, name string) (string, error) {
 	envConfig := map[string]string{}
-	envConfig["WOODPECKER_SERVER"] = cfg.WoodpeckerInstance
+	envConfig["WOODPECKER_SERVER"] = cfg.WoodpeckerGrpc
+	envConfig["WOODPECKER_GRPC_SECURE"] = "true" // TODO: should probably made configurable
 	envConfig["WOODPECKER_AGENT_SECRET"] = cfg.WoodpeckerAgentSecret
 	envConfig["WOODPECKER_FILTER_LABELS"] = cfg.WoodpeckerLabelSelector
 	envConfig["WOODPECKER_HOSTNAME"] = name

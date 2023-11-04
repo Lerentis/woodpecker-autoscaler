@@ -14,6 +14,7 @@ type Config = struct {
 	DryRun                  bool   `default:"false" env:"WOODPECKER_AUTOSCALER_DRY_RUN"`
 	WoodpeckerLabelSelector string `default:"uploadfilter24.eu/instance-role=Woodpecker" env:"WOODPECKER_AUTOSCALER_WOODPECKER_LABEL_SELECTOR"`
 	WoodpeckerInstance      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_INSTANCE"`
+	WoodpeckerGrpc          string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_GRPC"`
 	WoodpeckerAgentSecret   string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_SECRET"`
 	WoodpeckerApiToken      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_API_TOKEN"`
 	HcloudToken             string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
