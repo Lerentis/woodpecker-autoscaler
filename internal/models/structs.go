@@ -30,7 +30,7 @@ package models
 */
 
 type JobInformation struct {
-	ID           int               `json:"id"`
+	ID           string            `json:"id"`
 	Data         string            `json:"data"`
 	Labels       map[string]string `json:"labels"`
 	Dependencies string            `json:"dependencies,omitempty"`
