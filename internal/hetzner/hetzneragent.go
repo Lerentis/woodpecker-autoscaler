@@ -68,7 +68,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
 	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
 	userdata, err := generateConfig(cfg, name)
-	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "amd64")
+	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "x86")
 	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudRegion)
 	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.HcloudInstanceType)
 	key, _, err := client.SSHKey.GetByName(context.Background(), cfg.HcloudSSHKey)
