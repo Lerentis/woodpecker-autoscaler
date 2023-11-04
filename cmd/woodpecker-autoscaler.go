@@ -67,7 +67,8 @@ func main() {
 				}
 				log.WithFields(log.Fields{
 					"Caller": "Main",
-				}).Infof("Waiting for agent %s to start", server.Name)
+				}).Infof("%s is in status %s", server.Name, server.Status)
+				time.Sleep(30 * time.Second)
 			}
 		} else {
 			log.WithFields(log.Fields{
