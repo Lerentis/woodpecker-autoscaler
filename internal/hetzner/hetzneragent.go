@@ -78,7 +78,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	labels["ControledBy"] = "WoodpeckerAutoscaler"
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
+		return nil, errors.New(fmt.Sprintf("Could not parse agent spec: %s", err.Error()))
 	}
 
 	res, _, err := client.Server.Create(context.Background(), hcloud.ServerCreateOpts{
@@ -92,6 +92,10 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		StartAfterCreate: utils.BoolPointer(true),
 		Labels:           labels,
 	})
+
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
+	}
 
 	log.WithFields(log.Fields{
 		"Caller": "CreateNewAgent",
