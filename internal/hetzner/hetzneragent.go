@@ -15,6 +15,7 @@ import (
 )
 
 var USER_DATA_TEMPLATE = `
+#cloud-config
 write_files:
 - content: |
     # docker-compose.yml
