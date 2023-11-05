@@ -82,6 +82,11 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		return nil, errors.New(fmt.Sprintf("Could not parse agent spec: %s", err.Error()))
 	}
 
+	networkConf := hcloud.ServerCreatePublicNet{
+		EnableIPv4: false,
+		EnableIPv6: true,
+	}
+
 	res, _, err := client.Server.Create(context.Background(), hcloud.ServerCreateOpts{
 		Name:             name,
 		ServerType:       pln,
@@ -92,6 +97,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		UserData:         userdata,
 		StartAfterCreate: utils.BoolPointer(true),
 		Labels:           labels,
+		PublicNet:        &networkConf,
 	})
 
 	if err != nil {
