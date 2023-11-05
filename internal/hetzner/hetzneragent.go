@@ -20,9 +20,7 @@ write_files:
 - content: |
     # docker-compose.yml
     version: '3'
-
     services:
-
       woodpecker-agent:
         image: {{ .Image }}
         command: agent
@@ -40,16 +38,17 @@ runcmd:
 
 type UserDataConfig struct {
 	Image     string
-	EnvConfig map[string]string
+	EnvConfig map[string]interface{}
 }
 
 func generateConfig(cfg *config.Config, name string) (string, error) {
-	envConfig := map[string]string{}
-	envConfig["WOODPECKER_SERVER"] = cfg.WoodpeckerGrpc
-	envConfig["WOODPECKER_GRPC_SECURE"] = "true" // TODO: should probably made configurable
-	envConfig["WOODPECKER_AGENT_SECRET"] = cfg.WoodpeckerAgentSecret
-	envConfig["WOODPECKER_FILTER_LABELS"] = cfg.WoodpeckerLabelSelector
-	envConfig["WOODPECKER_HOSTNAME"] = name
+	envConfig := map[string]interface{}{
+		"WOODPECKER_SERVER":        cfg.WoodpeckerGrpc,
+		"WOODPECKER_GRPC_SECURE":   true,
+		"WOODPECKER_AGENT_SECRET":  cfg.WoodpeckerAgentSecret,
+		"WOODPECKER_FILTER_LABELS": cfg.WoodpeckerLabelSelector,
+		"WOODPECKER_HOSTNAME":      name,
+	}
 	config := UserDataConfig{
 		Image:     "woodpeckerci/woodpecker-agent:latest",
 		EnvConfig: envConfig,
