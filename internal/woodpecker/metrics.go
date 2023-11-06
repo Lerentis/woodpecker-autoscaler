@@ -35,56 +35,48 @@ func QueueInfo(cfg *config.Config, target interface{}) error {
 	return json.NewDecoder(resp.Body).Decode(target)
 }
 
-func CheckPending(cfg *config.Config) (bool, error) {
+func CheckPending(cfg *config.Config) (int, error) {
 	expectedKV := strings.Split(cfg.WoodpeckerLabelSelector, "=")
 	queueInfo := new(models.QueueInfo)
 	err := QueueInfo(cfg, queueInfo)
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
+		return 0, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
 	}
+	count := 0
 	if queueInfo.Stats.PendingCount > 0 {
 		if queueInfo.Pending != nil {
 			for _, pendingJobs := range queueInfo.Pending {
 				val, exists := pendingJobs.Labels[expectedKV[0]]
 				if exists && val == expectedKV[1] {
+					count++
 					log.WithFields(log.Fields{
 						"Caller": "CheckPending",
-					}).Info("Found pending job for us")
-					return true, nil
-				} else {
-					log.WithFields(log.Fields{
-						"Caller": "CheckPending",
-					}).Info("No Jobs for us in Queue")
-					return false, nil
+					}).Debugf("Currently serving %d Jobs", count)
 				}
 			}
 		}
 	}
-	return false, nil
+	return count, nil
 }
 
-func CheckRunning(cfg *config.Config) (bool, error) {
+func CheckRunning(cfg *config.Config) (int, error) {
 	expectedKV := strings.Split(cfg.WoodpeckerLabelSelector, "=")
 	queueInfo := new(models.QueueInfo)
 	err := QueueInfo(cfg, queueInfo)
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
+		return 0, errors.New(fmt.Sprintf("Error from QueueInfo: %s", err.Error()))
 	}
+	count := 0
 	if queueInfo.Stats.RunningCount > 0 {
 		for _, runningJobs := range queueInfo.Running {
 			val, exists := runningJobs.Labels[expectedKV[0]]
 			if exists && val == expectedKV[1] {
+				count++
 				log.WithFields(log.Fields{
 					"Caller": "CheckRunning",
-				}).Info("Found running job for us")
-				return true, nil
-			} else {
-				log.WithFields(log.Fields{
-					"Caller": "CheckRunning",
-				}).Info("No running job for us")
-				return false, nil
+				}).Debugf("Currently serving %d Jobs", count)
 			}
 		}
 	}
-	return false, nil
+	return count, nil
 }

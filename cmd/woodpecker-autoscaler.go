@@ -51,7 +51,7 @@ func main() {
 		log.WithFields(log.Fields{
 			"Caller": "Main",
 		}).Infof("Currently owning %d Agents", len(ownedNodes))
-		if pendingTasks {
+		if pendingTasks < len(ownedNodes) {
 			server, err := hetzner.CreateNewAgent(cfg)
 			if err != nil {
 				log.WithFields(log.Fields{
@@ -86,7 +86,7 @@ func main() {
 					"Caller": "Main",
 				}).Fatal(fmt.Sprintf("Error checking woodpecker queue: %s", err.Error()))
 			}
-			if runningTasks {
+			if runningTasks <= len(ownedNodes) {
 				log.WithFields(log.Fields{
 					"Caller": "Main",
 				}).Info("Still found running tasks. No agent to be removed")
