@@ -29,7 +29,7 @@ write_files:
           - /var/run/docker.sock:/var/run/docker.sock
         environment:
 		{{- range $key, $val := .EnvConfig }}
-          - {{ $key }}="{{ $val }}"
+          - {{ $key }}={{ $val }}
 	  	{{- end }}
   path: /root/docker-compose.yml
 runcmd:
@@ -43,11 +43,11 @@ type UserDataConfig struct {
 
 func generateConfig(cfg *config.Config, name string) (string, error) {
 	envConfig := map[string]interface{}{
-		"WOODPECKER_SERVER":        cfg.WoodpeckerGrpc,
+		"WOODPECKER_SERVER":        fmt.Sprintf(`"%s"`, cfg.WoodpeckerGrpc),
 		"WOODPECKER_GRPC_SECURE":   true,
-		"WOODPECKER_AGENT_SECRET":  cfg.WoodpeckerAgentSecret,
-		"WOODPECKER_FILTER_LABELS": cfg.WoodpeckerLabelSelector,
-		"WOODPECKER_HOSTNAME":      name,
+		"WOODPECKER_AGENT_SECRET":  fmt.Sprintf(`"%s"`, cfg.WoodpeckerAgentSecret),
+		"WOODPECKER_FILTER_LABELS": fmt.Sprintf(`"%s"`, cfg.WoodpeckerLabelSelector),
+		"WOODPECKER_HOSTNAME":      fmt.Sprintf(`"%s"`, name),
 	}
 	config := UserDataConfig{
 		Image:     "woodpeckerci/woodpecker-agent:latest",
