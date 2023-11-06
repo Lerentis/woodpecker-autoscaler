@@ -21,7 +21,7 @@ type Config = struct {
 	HcloudInstanceType      string `default:"cpx21" env:"WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE"`
 	HcloudRegion            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_REGION"`
 	HcloudDatacenter        string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_DATACENTER"`
-	HcloudSSHKey            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEY"`
+	HcloudSSHKeys           string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEYS"`
 }
 
 func GenConfig() (cfg *Config, err error) {

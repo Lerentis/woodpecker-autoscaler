@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"text/template"
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
@@ -69,10 +70,20 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
 	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
 	userdata, err := generateConfig(cfg, name)
+	keys := []*hcloud.SSHKey{}
+	for _, keyName := range strings.Split(cfg.HcloudSSHKeys, ",") {
+		key, _, err := client.SSHKey.GetByName(context.Background(), keyName)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"Caller": "CreateNewAgent",
+			}).Warnf("Failed to look up ssh key %s: %s", keyName, err.Error())
+			continue
+		}
+		keys = append(keys, key)
+	}
 	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "x86")
 	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudRegion)
 	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.HcloudInstanceType)
-	key, _, err := client.SSHKey.GetByName(context.Background(), cfg.HcloudSSHKey)
 	dc, _, err := client.Datacenter.GetByName(context.Background(), cfg.HcloudDatacenter)
 	labels := map[string]string{}
 	labels["Role"] = "WoodpeckerAgent"
@@ -91,7 +102,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		Name:             name,
 		ServerType:       pln,
 		Image:            img,
-		SSHKeys:          []*hcloud.SSHKey{key},
+		SSHKeys:          keys,
 		Location:         loc,
 		Datacenter:       dc,
 		UserData:         userdata,
