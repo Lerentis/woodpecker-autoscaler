@@ -51,7 +51,7 @@ func main() {
 		log.WithFields(log.Fields{
 			"Caller": "Main",
 		}).Infof("Currently owning %d Agents", len(ownedNodes))
-		if pendingTasks < len(ownedNodes) {
+		if pendingTasks > len(ownedNodes) {
 			server, err := hetzner.CreateNewAgent(cfg)
 			if err != nil {
 				log.WithFields(log.Fields{
