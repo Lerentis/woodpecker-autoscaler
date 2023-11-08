@@ -86,7 +86,7 @@ func main() {
 					"Caller": "Main",
 				}).Fatal(fmt.Sprintf("Error checking woodpecker queue: %s", err.Error()))
 			}
-			if runningTasks <= len(ownedNodes) && runningTasks != 0 && pendingTasks > 0 {
+			if (runningTasks <= len(ownedNodes) && runningTasks != 0) || pendingTasks > 0 {
 				log.WithFields(log.Fields{
 					"Caller": "Main",
 				}).Info("Still found running tasks. No agent to be removed")
