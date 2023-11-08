@@ -17,6 +17,7 @@ type Config = struct {
 	WoodpeckerGrpc          string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_GRPC"`
 	WoodpeckerAgentSecret   string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_SECRET"`
 	WoodpeckerApiToken      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_API_TOKEN"`
+	WoodpeckerAgentVersion  string `default:"latest" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_VERSION"`
 	HcloudToken             string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
 	HcloudInstanceType      string `default:"cpx21" env:"WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE"`
 	HcloudRegion            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_REGION"`

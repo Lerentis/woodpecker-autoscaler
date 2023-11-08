@@ -47,11 +47,11 @@ func generateConfig(cfg *config.Config, name string) (string, error) {
 		"WOODPECKER_SERVER":        fmt.Sprintf("%s", cfg.WoodpeckerGrpc),
 		"WOODPECKER_GRPC_SECURE":   true,
 		"WOODPECKER_AGENT_SECRET":  fmt.Sprintf("%s", cfg.WoodpeckerAgentSecret),
-		"WOODPECKER_FILTER_LABELS": fmt.Sprintf(`"%s"`, cfg.WoodpeckerLabelSelector),
-		"WOODPECKER_HOSTNAME":      fmt.Sprintf(`"%s"`, name),
+		"WOODPECKER_FILTER_LABELS": fmt.Sprintf("%s", cfg.WoodpeckerLabelSelector),
+		"WOODPECKER_HOSTNAME":      fmt.Sprintf("%s", name),
 	}
 	config := UserDataConfig{
-		Image:     "woodpeckerci/woodpecker-agent:latest",
+		Image:     fmt.Sprintf("woodpeckerci/woodpecker-agent:%s", cfg.WoodpeckerAgentVersion),
 		EnvConfig: envConfig,
 	}
 	tmpl, err := template.New("userdata").Parse(USER_DATA_TEMPLATE)

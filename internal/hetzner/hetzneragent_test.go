@@ -16,6 +16,7 @@ func TestGenerateUserData(t *testing.T) {
 		WoodpeckerGrpc:          "grpc-test.woodpecker.test.tld:443",
 		WoodpeckerAgentSecret:   "Geheim1!",
 		WoodpeckerApiToken:      "VeryGeheim1!",
+		WoodpeckerAgentVersion:  "latest",
 		HcloudToken:             "EvenMoreGeheim1!",
 		HcloudInstanceType:      "cpx21",
 		HcloudRegion:            "eu-central",
@@ -37,9 +38,9 @@ write_files:
           - /var/run/docker.sock:/var/run/docker.sock
         environment:
           - WOODPECKER_AGENT_SECRET=Geheim1!
-          - WOODPECKER_FILTER_LABELS="uploadfilter24.eu/instance-role=WoodpeckerTest"
+          - WOODPECKER_FILTER_LABELS=uploadfilter24.eu/instance-role=WoodpeckerTest
           - WOODPECKER_GRPC_SECURE=true
-          - WOODPECKER_HOSTNAME="test-instance"
+          - WOODPECKER_HOSTNAME=test-instance
           - WOODPECKER_SERVER=grpc-test.woodpecker.test.tld:443
   path: /root/docker-compose.yml
 runcmd:
