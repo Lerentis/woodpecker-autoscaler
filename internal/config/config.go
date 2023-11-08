@@ -23,6 +23,7 @@ type Config = struct {
 	HcloudRegion            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_REGION"`
 	HcloudDatacenter        string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_DATACENTER"`
 	HcloudSSHKeys           string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEYS"`
+	HcloudIPv6Only          bool   `default:"false" env:"WOODPECKER_AUTOSCALER_HCLOUD_IPV6_ONLY"`
 }
 
 func GenConfig() (cfg *Config, err error) {

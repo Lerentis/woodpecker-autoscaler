@@ -94,7 +94,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	}
 
 	networkConf := hcloud.ServerCreatePublicNet{
-		EnableIPv4: false,
+		EnableIPv4: !cfg.HcloudIPv6Only,
 		EnableIPv6: true,
 	}
 
