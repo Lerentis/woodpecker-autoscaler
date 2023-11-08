@@ -44,7 +44,7 @@ type UserDataConfig struct {
 
 func generateConfig(cfg *config.Config, name string) (string, error) {
 	envConfig := map[string]interface{}{
-		"WOODPECKER_SERVER":        fmt.Sprintf(`"%s"`, cfg.WoodpeckerGrpc),
+		"WOODPECKER_SERVER":        fmt.Sprintf("%s", cfg.WoodpeckerGrpc),
 		"WOODPECKER_GRPC_SECURE":   true,
 		"WOODPECKER_AGENT_SECRET":  fmt.Sprintf(`"%s"`, cfg.WoodpeckerAgentSecret),
 		"WOODPECKER_FILTER_LABELS": fmt.Sprintf(`"%s"`, cfg.WoodpeckerLabelSelector),
