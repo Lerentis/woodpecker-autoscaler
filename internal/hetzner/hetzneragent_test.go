@@ -36,7 +36,7 @@ write_files:
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
         environment:
-          - WOODPECKER_AGENT_SECRET="Geheim1!"
+          - WOODPECKER_AGENT_SECRET=Geheim1!
           - WOODPECKER_FILTER_LABELS="uploadfilter24.eu/instance-role=WoodpeckerTest"
           - WOODPECKER_GRPC_SECURE=true
           - WOODPECKER_HOSTNAME="test-instance"
