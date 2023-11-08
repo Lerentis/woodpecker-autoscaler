@@ -86,23 +86,29 @@ func main() {
 					"Caller": "Main",
 				}).Fatal(fmt.Sprintf("Error checking woodpecker queue: %s", err.Error()))
 			}
-			if runningTasks <= len(ownedNodes) {
+			if runningTasks <= len(ownedNodes) && runningTasks != 0 {
 				log.WithFields(log.Fields{
 					"Caller": "Main",
 				}).Info("Still found running tasks. No agent to be removed")
 			} else {
-				log.WithFields(log.Fields{
-					"Caller": "Main",
-				}).Info("No tasks running. Will remove agents")
-				for _, server := range ownedNodes {
-					hetzner.DecomNode(cfg, &server)
-					agentId, err := woodpecker.GetAgentIdByName(cfg, server.Name)
-					if err != nil {
-						log.WithFields(log.Fields{
-							"Caller": "Main",
-						}).Warnf("Could not find agent %s in woodpecker. Assuming it was never added", server.Name)
-					} else {
-						woodpecker.DecomAgent(cfg, agentId)
+				if len(ownedNodes) == 0 {
+					log.WithFields(log.Fields{
+						"Caller": "Main",
+					}).Infof("Nothing running and not owning any nodes. Recheck in %d", cfg.CheckInterval)
+				} else {
+					log.WithFields(log.Fields{
+						"Caller": "Main",
+					}).Info("No tasks running. Will remove agents")
+					for _, server := range ownedNodes {
+						hetzner.DecomNode(cfg, &server)
+						agentId, err := woodpecker.GetAgentIdByName(cfg, server.Name)
+						if err != nil {
+							log.WithFields(log.Fields{
+								"Caller": "Main",
+							}).Warnf("Could not find agent %s in woodpecker. Assuming it was never added", server.Name)
+						} else {
+							woodpecker.DecomAgent(cfg, agentId)
+						}
 					}
 				}
 			}
