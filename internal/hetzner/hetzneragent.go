@@ -82,16 +82,16 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		keys = append(keys, key)
 	}
 	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "x86")
+	utils.CheckError(err, "GetImageByNameAndArchitecture")
 	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudRegion)
+	utils.CheckError(err, "GetRegionByName")
 	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.HcloudInstanceType)
+	utils.CheckError(err, "GetServerTypeByName")
 	dc, _, err := client.Datacenter.GetByName(context.Background(), cfg.HcloudDatacenter)
+	utils.CheckError(err, "GetDatacenterByName")
 	labels := map[string]string{}
 	labels["Role"] = "WoodpeckerAgent"
 	labels["ControledBy"] = "WoodpeckerAutoscaler"
-
-	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not parse agent spec: %s", err.Error()))
-	}
 
 	networkConf := hcloud.ServerCreatePublicNet{
 		EnableIPv4: !cfg.HcloudIPv6Only,

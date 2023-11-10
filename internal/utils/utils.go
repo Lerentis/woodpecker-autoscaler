@@ -1,6 +1,10 @@
 package utils
 
-import "math/rand"
+import (
+	"math/rand"
+
+	log "github.com/sirupsen/logrus"
+)
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -14,4 +18,12 @@ func RandStringBytes(n int) string {
 
 func BoolPointer(b bool) *bool {
 	return &b
+}
+
+func CheckError(err error, caller string) {
+	if err != nil {
+		log.WithFields(log.Fields{
+			"Caller": caller,
+		}).Warnf("Error from hetzner API: %s", err.Error())
+	}
 }
