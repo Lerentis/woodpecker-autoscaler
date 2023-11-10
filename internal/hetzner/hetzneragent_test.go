@@ -19,8 +19,7 @@ func TestGenerateUserData(t *testing.T) {
 		WoodpeckerAgentVersion:  "latest",
 		HcloudToken:             "EvenMoreGeheim1!",
 		HcloudInstanceType:      "cpx21",
-		HcloudRegion:            "eu-central",
-		HcloudDatacenter:        "fsn1-dc14",
+		HcloudLocation:          "fsn1",
 		HcloudSSHKeys:           "test-key",
 	}
 	wanted := `

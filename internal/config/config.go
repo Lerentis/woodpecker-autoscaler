@@ -20,8 +20,7 @@ type Config = struct {
 	WoodpeckerAgentVersion  string `default:"latest" env:"WOODPECKER_AUTOSCALER_WOODPECKER_AGENT_VERSION"`
 	HcloudToken             string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_TOKEN"`
 	HcloudInstanceType      string `default:"cpx21" env:"WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE"`
-	HcloudRegion            string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_REGION"`
-	HcloudDatacenter        string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_DATACENTER"`
+	HcloudLocation          string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_LOCATION"`
 	HcloudSSHKeys           string `default:"" env:"WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEYS"`
 	HcloudIPv6Only          bool   `default:"false" env:"WOODPECKER_AUTOSCALER_HCLOUD_IPV6_ONLY"`
 }

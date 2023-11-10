@@ -83,12 +83,10 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	}
 	img, _, err := client.Image.GetByNameAndArchitecture(context.Background(), "docker-ce", "x86")
 	utils.CheckError(err, "GetImageByNameAndArchitecture")
-	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudRegion)
+	loc, _, err := client.Location.GetByName(context.Background(), cfg.HcloudLocation)
 	utils.CheckError(err, "GetRegionByName")
 	pln, _, err := client.ServerType.GetByName(context.Background(), cfg.HcloudInstanceType)
 	utils.CheckError(err, "GetServerTypeByName")
-	dc, _, err := client.Datacenter.GetByName(context.Background(), cfg.HcloudDatacenter)
-	utils.CheckError(err, "GetDatacenterByName")
 	labels := map[string]string{}
 	labels["Role"] = "WoodpeckerAgent"
 	labels["ControledBy"] = "WoodpeckerAutoscaler"
@@ -104,7 +102,6 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 		Image:            img,
 		SSHKeys:          keys,
 		Location:         loc,
-		Datacenter:       dc,
 		UserData:         userdata,
 		StartAfterCreate: utils.BoolPointer(true),
 		Labels:           labels,
