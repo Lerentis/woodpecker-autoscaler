@@ -53,9 +53,7 @@ env:
     value: "define_it"
   - name: WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE
     value: "cpx21"
-  - name: WOODPECKER_AUTOSCALER_HCLOUD_REGION
-    value: "define_it"
-  - name: WOODPECKER_AUTOSCALER_HCLOUD_DATACENTER
+  - name: WOODPECKER_AUTOSCALER_HCLOUD_LOCATION
     value: "define_it"
   - name: WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEY
     value: "define_it"
