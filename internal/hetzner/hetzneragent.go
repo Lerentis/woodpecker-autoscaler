@@ -5,10 +5,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"text/template"
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
+	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/models"
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/utils"
 	"github.com/hetznercloud/hcloud-go/hcloud"
 
@@ -42,13 +44,14 @@ type UserDataConfig struct {
 	EnvConfig map[string]interface{}
 }
 
-func generateConfig(cfg *config.Config, name string) (string, error) {
+func generateConfig(cfg *config.Config, name string, agentToken string) (string, error) {
 	envConfig := map[string]interface{}{
 		"WOODPECKER_SERVER":        fmt.Sprintf("%s", cfg.WoodpeckerGrpc),
 		"WOODPECKER_GRPC_SECURE":   true,
-		"WOODPECKER_AGENT_SECRET":  fmt.Sprintf("%s", cfg.WoodpeckerAgentSecret),
+		"WOODPECKER_AGENT_SECRET":  fmt.Sprintf("%s", agentToken),
 		"WOODPECKER_FILTER_LABELS": fmt.Sprintf("%s", cfg.WoodpeckerLabelSelector),
 		"WOODPECKER_HOSTNAME":      fmt.Sprintf("%s", name),
+		"WOODPECKER_MAX_WORKFLOWS": 4,
 	}
 	config := UserDataConfig{
 		Image:     fmt.Sprintf("woodpeckerci/woodpecker-agent:%s", cfg.WoodpeckerAgentVersion),
@@ -66,10 +69,9 @@ func generateConfig(cfg *config.Config, name string) (string, error) {
 	return buf.String(), nil
 }
 
-func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
+func CreateNewAgent(cfg *config.Config, woodpeckerAgent *models.Agent) (*hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
-	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
-	userdata, err := generateConfig(cfg, name)
+	userdata, err := generateConfig(cfg, woodpeckerAgent.Name, woodpeckerAgent.Token)
 	keys := []*hcloud.SSHKey{}
 	for _, keyName := range strings.Split(cfg.HcloudSSHKeys, ",") {
 		key, _, err := client.SSHKey.GetByName(context.Background(), keyName)
@@ -90,6 +92,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	labels := map[string]string{}
 	labels["Role"] = "WoodpeckerAgent"
 	labels["ControledBy"] = "WoodpeckerAutoscaler"
+	labels["ID"] = fmt.Sprintf("%d", woodpeckerAgent.ID)
 
 	networkConf := hcloud.ServerCreatePublicNet{
 		EnableIPv4: !cfg.HcloudIPv6Only,
@@ -97,7 +100,7 @@ func CreateNewAgent(cfg *config.Config) (*hcloud.Server, error) {
 	}
 
 	res, _, err := client.Server.Create(context.Background(), hcloud.ServerCreateOpts{
-		Name:             name,
+		Name:             woodpeckerAgent.Name,
 		ServerType:       pln,
 		Image:            img,
 		SSHKeys:          keys,
@@ -138,16 +141,28 @@ func ListAgents(cfg *config.Config) ([]hcloud.Server, error) {
 	return myServers, nil
 }
 
-func DecomNode(cfg *config.Config, server *hcloud.Server) error {
+func DecomNode(cfg *config.Config, server *hcloud.Server) (int64, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
+	var woodpeckerAgentID int64
+	val, exists := server.Labels["ID"]
+	if exists {
+		log.WithFields(log.Fields{
+			"Caller": "DecomNode",
+		}).Debugf("Found woodpecker agent id: %s", val)
+		woodpeckerAgentID, _ = strconv.ParseInt(val, 10, 64)
+	} else {
+		log.WithFields(log.Fields{
+			"Caller": "DecomNode",
+		}).Warnf("Did not find woodpecker agent id for node %s", server.Name)
+	}
 	log.WithFields(log.Fields{
 		"Caller": "DecomNode",
 	}).Debugf("Deleting %s node", server.Name)
 	_, _, err := client.Server.DeleteWithResult(context.Background(), server)
 	if err != nil {
-		return errors.New(fmt.Sprintf("Could not delete Agent: %s", err.Error()))
+		return woodpeckerAgentID, errors.New(fmt.Sprintf("Could not delete Agent: %s", err.Error()))
 	}
-	return nil
+	return woodpeckerAgentID, nil
 }
 
 func RefreshNodeInfo(cfg *config.Config, serverID int) (*hcloud.Server, error) {
