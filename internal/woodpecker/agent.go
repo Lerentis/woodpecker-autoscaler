@@ -1,6 +1,7 @@
 package woodpecker
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,11 +9,12 @@ import (
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/models"
+	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/utils"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func DecomAgent(cfg *config.Config, agentId int) error {
+func DecomAgent(cfg *config.Config, agentId int64) error {
 	apiRoute := fmt.Sprintf("%s/api/agents/%d", cfg.WoodpeckerInstance, agentId)
 	req, err := http.NewRequest("DELETE", apiRoute, nil)
 	if err != nil {
@@ -35,7 +37,7 @@ func DecomAgent(cfg *config.Config, agentId int) error {
 
 func GetAgentIdByName(cfg *config.Config, name string) (int, error) {
 	apiRoute := fmt.Sprintf("%s/api/agents?page=1&perPage=100", cfg.WoodpeckerInstance)
-	req, err := http.NewRequest("GET", apiRoute, nil)
+	req, err := http.NewRequest(http.MethodGet, apiRoute, nil)
 	if err != nil {
 		return 0, errors.New(fmt.Sprintf("Could not create agent query request: %s", err.Error()))
 	}
@@ -66,4 +68,65 @@ func GetAgentIdByName(cfg *config.Config, name string) (int, error) {
 		}
 	}
 	return 0, errors.New(fmt.Sprintf("Agent with name %s is not in server", name))
+}
+
+func ListAgents(cfg *config.Config) (*models.AgentList, error) {
+	agentList := new(models.AgentList)
+	apiRoute := fmt.Sprintf("%s/api/agents?page=1&perPage=100", cfg.WoodpeckerInstance)
+	req, err := http.NewRequest(http.MethodGet, apiRoute, nil)
+	if err != nil {
+		return agentList, errors.New(fmt.Sprintf("Could not create agent query request: %s", err.Error()))
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.WoodpeckerApiToken))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return agentList, errors.New(fmt.Sprintf("Could not query agent list: %s", err.Error()))
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return agentList, errors.New(fmt.Sprintf("Invalid status code from API: %d", resp.StatusCode))
+	}
+	err = json.NewDecoder(resp.Body).Decode(agentList)
+	if err != nil {
+		return agentList, errors.New(fmt.Sprintf("Could not unmarshal api response: %s", err.Error()))
+	}
+	return agentList, nil
+}
+
+func CreateWoodpeckerAgent(cfg *config.Config) (*models.Agent, error) {
+	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
+	agentRequest := models.Agent{
+		Name:       name,
+		NoSchedule: false,
+	}
+	jsonBody, _ := json.Marshal(agentRequest)
+	bodyReader := bytes.NewReader(jsonBody)
+
+	apiRoute := fmt.Sprintf("%s/api/agents", cfg.WoodpeckerInstance)
+	req, err := http.NewRequest(http.MethodPost, apiRoute, bodyReader)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not create agent request: %s", err.Error()))
+	}
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.WoodpeckerApiToken))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.New(fmt.Sprintf("Invalid status code from API: %d", resp.StatusCode))
+	}
+	newAgent := new(models.Agent)
+	err = json.NewDecoder(resp.Body).Decode(newAgent)
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("Could not unmarshal api response: %s", err.Error()))
+	}
+	return newAgent, nil
+
 }

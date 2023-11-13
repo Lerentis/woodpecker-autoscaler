@@ -40,12 +40,13 @@ write_files:
           - WOODPECKER_FILTER_LABELS=uploadfilter24.eu/instance-role=WoodpeckerTest
           - WOODPECKER_GRPC_SECURE=true
           - WOODPECKER_HOSTNAME=test-instance
+          - WOODPECKER_MAX_WORKFLOWS=4
           - WOODPECKER_SERVER=grpc-test.woodpecker.test.tld:443
   path: /root/docker-compose.yml
 runcmd:
 - [ sh, -xc, "cd /root; docker run --rm --privileged multiarch/qemu-user-static --reset -p yes; docker compose up -d" ]
 `
-	got, err := generateConfig(&cfg, "test-instance")
+	got, err := generateConfig(&cfg, "test-instance", "Geheim1!")
 	if err != nil {
 		t.Errorf("Error in generating Config: %v", err)
 	}

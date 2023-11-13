@@ -15,7 +15,7 @@ import (
 
 func QueueInfo(cfg *config.Config, target interface{}) error {
 	apiRoute := fmt.Sprintf("%s/api/queue/info", cfg.WoodpeckerInstance)
-	req, err := http.NewRequest("GET", apiRoute, nil)
+	req, err := http.NewRequest(http.MethodGet, apiRoute, nil)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Could not create queue request: %s", err.Error()))
 	}
