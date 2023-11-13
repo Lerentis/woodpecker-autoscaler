@@ -106,6 +106,9 @@ func CreateWoodpeckerAgent(cfg *config.Config) (*models.Agent, error) {
 	bodyReader := bytes.NewReader(jsonBody)
 
 	apiRoute := fmt.Sprintf("%s/api/agents", cfg.WoodpeckerInstance)
+	log.WithFields(log.Fields{
+		"Caller": "CreateWoodpeckerAgent",
+	}).Debugf("Sending the following data to %s: %s", apiRoute, jsonBody)
 	req, err := http.NewRequest(http.MethodPost, apiRoute, bodyReader)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create agent request: %s", err.Error()))
@@ -114,6 +117,9 @@ func CreateWoodpeckerAgent(cfg *config.Config) (*models.Agent, error) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.WoodpeckerApiToken))
 
 	resp, err := http.DefaultClient.Do(req)
+	log.WithFields(log.Fields{
+		"Caller": "CreateWoodpeckerAgent",
+	}).Debugf("Response from woodpecker: %s", resp.Body)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
 	}
