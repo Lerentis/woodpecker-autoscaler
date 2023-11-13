@@ -25,7 +25,7 @@ func DecomAgent(cfg *config.Config, agentId int64) error {
 
 	log.WithFields(log.Fields{
 		"Caller": "DecomAgent",
-	}).Debugf("Deleting %d agent from woodpecker", agentId)
+	}).Debugf("Deleting agent with id %d from woodpecker", agentId)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

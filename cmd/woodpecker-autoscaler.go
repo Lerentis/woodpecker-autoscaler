@@ -100,7 +100,7 @@ func main() {
 				if len(ownedNodes) == 0 {
 					log.WithFields(log.Fields{
 						"Caller": "Main",
-					}).Infof("Nothing running and not owning any nodes. Recheck in %d", cfg.CheckInterval)
+					}).Info("Nothing running and not owning any nodes")
 				} else {
 					log.WithFields(log.Fields{
 						"Caller": "Main",
@@ -122,6 +122,9 @@ func main() {
 				}
 			}
 		}
+		log.WithFields(log.Fields{
+			"Caller": "Main",
+		}).Infof("Recheck in %d", cfg.CheckInterval)
 		time.Sleep(time.Duration(cfg.CheckInterval) * time.Minute)
 	}
 }
