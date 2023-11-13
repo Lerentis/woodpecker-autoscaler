@@ -90,3 +90,8 @@ type Agent struct {
 type AgentList struct {
 	Agents []Agent
 }
+
+type AgentRequest struct {
+	Name       string `json:"name"`
+	NoSchedule bool   `json:"no_schedule"`
+}

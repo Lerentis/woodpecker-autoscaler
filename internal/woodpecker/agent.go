@@ -98,7 +98,7 @@ func ListAgents(cfg *config.Config) (*models.AgentList, error) {
 
 func CreateWoodpeckerAgent(cfg *config.Config) (*models.Agent, error) {
 	name := fmt.Sprintf("woodpecker-autoscaler-agent-%s", utils.RandStringBytes(5))
-	agentRequest := models.Agent{
+	agentRequest := models.AgentRequest{
 		Name:       name,
 		NoSchedule: false,
 	}
@@ -113,13 +113,10 @@ func CreateWoodpeckerAgent(cfg *config.Config) (*models.Agent, error) {
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create agent request: %s", err.Error()))
 	}
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.WoodpeckerApiToken))
 
 	resp, err := http.DefaultClient.Do(req)
-	log.WithFields(log.Fields{
-		"Caller": "CreateWoodpeckerAgent",
-	}).Debugf("Response from woodpecker: %s", resp.Body)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
 	}
