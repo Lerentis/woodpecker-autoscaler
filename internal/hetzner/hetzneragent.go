@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/config"
 	"git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler/internal/models"
@@ -172,4 +173,13 @@ func RefreshNodeInfo(cfg *config.Config, serverID int) (*hcloud.Server, error) {
 		return nil, errors.New(fmt.Sprintf("Could not refresh server info: %s", err.Error()))
 	}
 	return server, nil
+}
+
+func CheckRuntime(cfg *config.Config, server *hcloud.Server) (time.Duration, error) {
+	server, err := RefreshNodeInfo(cfg, server.ID)
+	now := time.Now()
+	if err != nil {
+		return time.Duration(0), errors.New(fmt.Sprintf("Could not check Runtime: %s", err.Error()))
+	}
+	return server.Created.Sub(now), nil
 }

@@ -32,6 +32,8 @@ env:
     value: "define_it"
   - name: WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEY
     value: "define_it"
+  - name: WOODPECKER_AUTOSCALER_COST_OPTIMIZED
+    value: "true"
 ```
 
 you can also create a secret manually with these information and reference the existing secret like this in the `values.yaml`:
@@ -79,6 +81,7 @@ WOODPECKER_AUTOSCALER_HCLOUD_TOKEN="define_it"
 WOODPECKER_AUTOSCALER_HCLOUD_INSTANCE_TYPE=cpx21
 WOODPECKER_AUTOSCALER_HCLOUD_LOCATION="define_it"
 WOODPECKER_AUTOSCALER_HCLOUD_SSH_KEY="define_it"
+WOODPECKER_AUTOSCALER_COST_OPTIMIZED="true"
 ```
 
 Now reload the systemd daemons and start the service:

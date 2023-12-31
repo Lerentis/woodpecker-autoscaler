@@ -12,6 +12,7 @@ type Config = struct {
 	LogLevel                string `default:"Info" env:"WOODPECKER_AUTOSCALER_LOGLEVEL"`
 	CheckInterval           int    `default:"15" env:"WOODPECKER_AUTOSCALER_CHECK_INTERVAL"`
 	DryRun                  bool   `default:"false" env:"WOODPECKER_AUTOSCALER_DRY_RUN"`
+	CostOptimizedMode       bool   `default:"false" env:"WOODPECKER_AUTOSCALER_COST_OPTIMIZED"`
 	WoodpeckerLabelSelector string `default:"uploadfilter24.eu/instance-role=Woodpecker" env:"WOODPECKER_AUTOSCALER_WOODPECKER_LABEL_SELECTOR"`
 	WoodpeckerInstance      string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_INSTANCE"`
 	WoodpeckerGrpc          string `default:"" env:"WOODPECKER_AUTOSCALER_WOODPECKER_GRPC"`

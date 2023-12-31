@@ -1,0 +1,19 @@
+CHANGELOG 
+
+v1.1.0
+
+Updated Dependencies
+Restructured Main event loop
+Cost optimized mode to make use of the fully hour that is billed by hetzner
+
+v1.0.1
+
+Fix woodpecker agent decom
+
+v1.0.0
+
+First stable release
+
+v0.0.1
+
+First test release
