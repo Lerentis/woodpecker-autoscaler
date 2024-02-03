@@ -85,13 +85,13 @@ func Decom(cfg *config.Config, ownedNodes []hcloud.Server) {
 			}
 			log.WithFields(log.Fields{
 				"Caller": "Decom",
-			}).Debugf("Node %s is running for %f", server.Name, runtime.Minutes())
+			}).Debugf("Node %s is running for %d", server.Name, runtime.Minute())
 			// Check if next check if sooner than the 60 Minute mark of the next hetzner check
 			// https://docs.hetzner.com/cloud/billing/faq/#how-do-you-bill-your-servers
-			if (runtime + time.Duration(cfg.CheckInterval)*time.Minute) < 60 {
+			if time.Duration(runtime.Add(time.Duration(cfg.CheckInterval)*time.Minute).Minute()) < (60 * time.Minute) {
 				log.WithFields(log.Fields{
 					"Caller": "Decom",
-				}).Infof("Skipping node termination of %s (running for %f Minutes) in Cost Optimized Mode", server.Name, runtime.Minutes())
+				}).Infof("Skipping node termination of %s (running for %d Minutes) in Cost Optimized Mode", server.Name, runtime.Minute())
 				continue
 			}
 		}

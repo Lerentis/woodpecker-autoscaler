@@ -175,11 +175,11 @@ func RefreshNodeInfo(cfg *config.Config, serverID int) (*hcloud.Server, error) {
 	return server, nil
 }
 
-func CheckRuntime(cfg *config.Config, server *hcloud.Server) (time.Duration, error) {
+func CheckRuntime(cfg *config.Config, server *hcloud.Server) (time.Time, error) {
 	server, err := RefreshNodeInfo(cfg, server.ID)
 	now := time.Now()
 	if err != nil {
-		return time.Duration(0), errors.New(fmt.Sprintf("Could not check Runtime: %s", err.Error()))
+		return time.Time{}, errors.New(fmt.Sprintf("Could not check Runtime: %s", err.Error()))
 	}
-	return server.Created.Sub(now), nil
+	return server.Created.Add(time.Duration(now.Minute())), nil
 }
