@@ -1,6 +1,9 @@
 when:
   - event: pull_request
 
+labels:
+  uploadfilter24.eu/instance-role: Woodpecker
+
 steps:
   test:
     image: golang:1.21
@@ -9,7 +12,7 @@ steps:
   pr-build:
     image: woodpeckerci/plugin-docker-buildx
     settings:
-      platforms: linux/arm64/v8
+      platforms: linux/arm64/v8,linux/amd64
       repo: lerentis/woodpecker-autoscaler
       tags:
         - latest
