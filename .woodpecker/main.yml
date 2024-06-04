@@ -2,8 +2,8 @@ when:
   - event: push
     branch: main
 
-labels:
-  uploadfilter24.eu/instance-role: Woodpecker
+#labels:
+#  uploadfilter24.eu/instance-role: Woodpecker
 
 steps:
   test:
