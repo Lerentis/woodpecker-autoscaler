@@ -1,6 +1,6 @@
 module git.uploadfilter24.eu/covidnetes/woodpecker-autoscaler
 
-go 1.22.4
+go 1.22
 
 require (
 	github.com/gorilla/mux v1.8.1

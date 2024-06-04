@@ -6,7 +6,7 @@ labels:
 
 steps:
   test:
-    image: golang:1.21
+    image: golang:1.22
     commands:
       - go test ./...
   release:
