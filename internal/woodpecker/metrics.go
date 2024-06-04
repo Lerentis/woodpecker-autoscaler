@@ -29,7 +29,7 @@ func QueueInfo(cfg *config.Config, target interface{}) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return errors.New(fmt.Sprintf("Error from queue info api: %s", err.Error()))
+		return errors.New(fmt.Sprintf("Error from queue info api: %s", resp.Status))
 	}
 
 	return json.NewDecoder(resp.Body).Decode(target)
