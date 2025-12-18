@@ -1,4 +1,17 @@
-CHANGELOG 
+CHANGELOG
+
+v1.1.1
+- Updated Dependencies
+- Added: unit tests
+ 	- Added `internal/hetzner/hetzneragent_extra_test.go` covering userdata generation and mocked runtime checks.
+ 	- Added `internal/woodpecker/agent_test.go` covering `CreateWoodpeckerAgent`, `GetAgentIdByName`, `DecomAgent` (httptest-based).
+ 	- Added `internal/woodpecker/metrics_test.go` covering `QueueInfo`, `CheckPending`, and `CheckRunning`.
+ 	- Implemented `internal/logging/logging_test.go` assertions for `ConfigureLogger` levels.
+- Changed: code to improve testability
+ 	- Introduced `refreshNodeInfo` indirection in `internal/hetzner/hetzneragent.go` to allow mocking in tests.
+ 	- Updated `hetzner` userdata test expectations and fixed JSON encoding in tests.
+- Notes:
+ 	- No functional behavior changes except testability refactor (indirection).
 
 v1.1.0
 

@@ -3,7 +3,6 @@ package hetzner
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -40,6 +39,8 @@ runcmd:
 - [ sh, -xc, "cd /root; docker run --rm --privileged multiarch/qemu-user-static --reset -p yes; docker compose up -d" ]
 `
 
+var refreshNodeInfo = RefreshNodeInfo
+
 type UserDataConfig struct {
 	Image     string
 	EnvConfig map[string]interface{}
@@ -60,12 +61,12 @@ func generateConfig(cfg *config.Config, name string, agentToken string) (string,
 	}
 	tmpl, err := template.New("userdata").Parse(USER_DATA_TEMPLATE)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("Errors in userdata template: %s", err.Error()))
+		return "", fmt.Errorf("Errors in userdata template: %s", err.Error())
 	}
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, &config)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("Could not render userdata template: %s", err.Error()))
+		return "", fmt.Errorf("Could not render userdata template: %s", err.Error())
 	}
 	return buf.String(), nil
 }
@@ -113,7 +114,7 @@ func CreateNewAgent(cfg *config.Config, woodpeckerAgent *models.Agent) (*hcloud.
 	})
 
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not create new Agent: %s", err.Error()))
+		return nil, fmt.Errorf("Could not create new Agent: %s", err.Error())
 	}
 
 	log.WithFields(log.Fields{
@@ -127,7 +128,7 @@ func ListAgents(cfg *config.Config) ([]hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
 	allServers, err := client.Server.All(context.Background())
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not query Server list: %s", err.Error()))
+		return nil, fmt.Errorf("Could not query Server list: %s", err.Error())
 	}
 	myServers := []hcloud.Server{}
 	for _, server := range allServers {
@@ -161,7 +162,7 @@ func DecomNode(cfg *config.Config, server *hcloud.Server) (int64, error) {
 	}).Debugf("Deleting %s node", server.Name)
 	_, _, err := client.Server.DeleteWithResult(context.Background(), server)
 	if err != nil {
-		return woodpeckerAgentID, errors.New(fmt.Sprintf("Could not delete Agent: %s", err.Error()))
+		return woodpeckerAgentID, fmt.Errorf("Could not delete Agent: %s", err.Error())
 	}
 	return woodpeckerAgentID, nil
 }
@@ -170,16 +171,16 @@ func RefreshNodeInfo(cfg *config.Config, serverID int) (*hcloud.Server, error) {
 	client := hcloud.NewClient(hcloud.WithToken(cfg.HcloudToken))
 	server, _, err := client.Server.GetByID(context.Background(), serverID)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Could not refresh server info: %s", err.Error()))
+		return nil, fmt.Errorf("Could not refresh server info: %s", err.Error())
 	}
 	return server, nil
 }
 
 func CheckRuntime(cfg *config.Config, server *hcloud.Server) (time.Time, error) {
-	server, err := RefreshNodeInfo(cfg, server.ID)
+	server, err := refreshNodeInfo(cfg, server.ID)
 	now := time.Now()
 	if err != nil {
-		return time.Time{}, errors.New(fmt.Sprintf("Could not check Runtime: %s", err.Error()))
+		return time.Time{}, fmt.Errorf("Could not check Runtime: %s", err.Error())
 	}
 	return server.Created.Add(time.Duration(now.Minute())), nil
 }

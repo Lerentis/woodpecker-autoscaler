@@ -1,7 +1,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -36,7 +35,7 @@ func GenConfig() (cfg *Config, err error) {
 		Silent:             true,
 		AutoReloadInterval: time.Minute}).Load(cfg, "config.json")
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("Error generating Config: %s", err.Error()))
+		return nil, fmt.Errorf("Error generating Config: %s", err.Error())
 	}
 	return cfg, nil
 }

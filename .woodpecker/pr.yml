@@ -6,7 +6,7 @@ labels:
 
 steps:
   test:
-    image: golang:1.23
+    image: golang:1.25
     commands:
       - go test ./...
   pr-build:
